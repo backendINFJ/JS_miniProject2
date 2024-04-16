@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>할일 목록</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+
+        h1 {
+            text-align: center;
+        }
+
+        #taskForm {
+            margin-bottom: 20px;
+        }
+
+        #taskForm input[type="text"] {
+            width: 300px;
+            padding: 5px;
+            margin-right: 10px;
+        }
+
+        #taskList {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        .task {
+            margin-bottom: 10px;
+        }
+
+        .task input[type="text"] {
+            width: 250px;
+            padding: 5px;
+        }
+
+        .delete {
+            color: red;
+            cursor: pointer;
+            margin-left: 10px;
+        }
+    </style>
+</head>
+<body>
+    <h1>할일 목록</h1>
+    
+    <form id="taskForm">
+        <input type="text" id="taskInput" placeholder="할일을 입력하세요">
+        <button type="submit">추가</button>
+    </form>
+
+    <ul id="taskList"></ul>
+
+    <script>
+        // 할일 목록 배열
+        let tasks = [];
+
+        // 할일 추가 함수
+        function addTask(taskName) {
+            tasks.push({ name: taskName, completed: false });
+            renderTasks();
+        }
+
+        // 할일 삭제 함수
+        function deleteTask(index) {
+            tasks.splice(index, 1);
+            renderTasks();
+        }
+
+        // 할일 목록 렌더링 함수
+        function renderTasks() {
+            const taskList = document.getElementById("taskList");
+            taskList.innerHTML = "";
+
+            tasks.forEach((task, index) => {
+                const listItem = document.createElement("li");
+                listItem.className = "task";
+                listItem.innerHTML = `
+                    <input type="text" value="${task.name}" disabled>
+                    <span class="delete" onclick="deleteTask(${index})">삭제</span>
+                `;
+                taskList.appendChild(listItem);
+            });
+        }
+
+        // 할일 추가 폼 제출 이벤트 리스너
+        document.getElementById("taskForm").addEventListener("submit", function(event) {
+            event.preventDefault();
+            const taskInput = document.getElementById("taskInput");
+            if (taskInput.value.trim() !== "") {
+                addTask(taskInput.value.trim());
+                taskInput.value = "";
+            }
+        });
+
+        // 초기 할일 목록 렌더링
+        renderTasks();
+    </script>
+</body>
+</html>

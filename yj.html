@@ -169,6 +169,24 @@
             });
         }
 
+        // 삭제하기 버튼 클릭 이벤트 처리
+        document.getElementById("memberList").addEventListener("click", function(event) {
+            if (event.target.classList.contains("delete-button")) {
+                var memberId = parseInt(event.target.parentNode.dataset.id); // 해당 팀원의 ID 가져오기
+
+                // 팀원 삭제
+                teamMembers = teamMembers.filter(function(member) {
+                    return member.id !== memberId;
+                });
+
+                // 팀원 목록 다시 표시
+                displayTeamMembers();
+
+                // 페이지 새로고침
+                location.reload();
+            }
+        });
+
         // 합류하기 폼 표시 함수
         document.getElementById("addButton").addEventListener("click", function() {
             document.querySelector(".join-form").style.display = "block";
@@ -266,7 +284,7 @@
             }
         });
 
-        // 초기 팀원 목록 표시 // 4월 16일 두 번째 커밋
+        // 초기 팀원 목록 표시
         displayTeamMembers();
     </script>
 </body>  
