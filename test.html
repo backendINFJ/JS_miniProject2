@@ -1,47 +1,280 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>팀팀한팀원 소개</title>
+    <title>미7거같조 보석함</title>
     <link rel="stylesheet" href="yj.css">
-</head>
-<body>
-    <h1>미7거거같조 팀팀한팀원소개</h1>
-    <div id="memberList"></div>
+    <!-- Firebase 스크립트 및 jQuery 추가 -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
+        import { getFirestore, collection, addDoc, getDocs, setDoc, doc, deleteDoc } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
 
-    <script>
+        // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+        // Firebase 설정
+        const firebaseConfig = {
+            apiKey: "AIzaSyCR6R45azww0iRvlgtzmJxjjSLDgWbXyV8",
+            authDomain: "crazy-48ee2.firebaseapp.com",
+            projectId: "crazy-48ee2",
+            storageBucket: "crazy-48ee2.appspot.com",
+            messagingSenderId: "192124743586",
+            appId: "1:192124743586:web:8f9b9b2561412de4e94cfb",
+            measurementId: "G-E936FPT32M"
+        };
+        // Firebase 인스턴스 초기화
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
         // 팀원 정보
-        var teamMembers = [
-            { name: "어동선", mbti: "INTP" },
-            { name: "강준모", mbti: "ISTJ" },
-            { name: "김윤재", mbti: "INFJ" },
-            { name: "노주연", mbti: "INTP" },
-            { name: "이제범", mbti: "ENFJ" }
-        ];
+        let teamMembers = [];
 
-        // 각 팀원 정보 반복문
-        teamMembers.forEach(function(member) {
-            // 멤버 카드 요소 생성
-            var memberCard = document.createElement("div");
-            memberCard.className = "member-card";
+        // 팀원 리스트 표시 함수
+        function displayTeamMembers() {
+            let memberList = $("#memberList");
+            memberList.empty(); // 기존 목록 초기화
+            teamMembers.forEach((member) => {
+                let memberCard = $("<div class='member-card' data-id='" + member.id + "'>");
+                let imageElement = $("<img class='member-image'>");
+                imageElement.attr("src", member.image);
+                imageElement.css({ width: "100px", height: "auto" });
+                memberCard.append(imageElement);
+                let nameElement = $("<h2 class='member-name'>").text(member.name);
+                memberCard.append(nameElement);
+                let mbtiElement = $("<p class='member-mbti'>").text("MBTI: " + member.mbti);
+                memberCard.append(mbtiElement);
+                let introductionElement = $("<p class='member-introduction'>").text("자기 소개: " + member.introduction);
+                memberCard.append(introductionElement);
+                let strengthsElement = $("<p class='member-strengths'>").text("객관적인 자신의 장점: " + member.strengths);
+                memberCard.append(strengthsElement);
+                let styleElement = $("<p class='member-style'>").text("자신만의 협업 스타일: " + member.style);
+                memberCard.append(styleElement);
+                let goalElement = $("<p class='member-goal'>").text("추구하는 궁극적인 목표: " + member.goal);
+                memberCard.append(goalElement);
+                let editButton = $("<button class='edit-button'>").text("수정하기");
+                memberCard.append(editButton);
+                let deleteButton = $("<button class='delete-button'>").text("삭제하기");
+                memberCard.append(deleteButton);
+                memberList.append(memberCard);
+            });
+        }
 
-            // 이름 요소 생성 및 추가
-            var nameElement = document.createElement("h2");
-            nameElement.className = "member-name";
-            nameElement.textContent = member.name;
-            memberCard.appendChild(nameElement);
+        // 팀원 추가 후 팀원 목록 다시 랜더링하는 함수
+        async function updateTeamMembers() {
+            // Firebase에서 팀원 데이터 가져오기
+            const querySnapshot = await getDocs(collection(db, "member"));
+            teamMembers = []; // Clear the teamMembers array
+            querySnapshot.forEach((doc) => {
+                teamMembers.push({ id: doc.id, ...doc.data() });
+            });
+            // 팀원 목록 다시 랜더링
+            displayTeamMembers();
+        }
 
-            // MBTI 요소 생성 및 추가
-            var mbtiElement = document.createElement("p");
-            mbtiElement.className = "member-mbti";
-            mbtiElement.textContent = "MBTI: " + member.mbti;
-            memberCard.appendChild(mbtiElement);
+        // 데이터 추가 후 팀원 목록 다시 랜더링
+        async function addTeamMemberToFirestore(member) {
+            try {
+                // Firestore에 데이터 추가
+                const docRef = await addDoc(collection(db, "member"), member);
+                console.log("Document written with ID: ", docRef.id);
+                // 데이터 추가 후 팀원 목록 다시 랜더링
+                updateTeamMembers();
+            } catch (error) {
+                console.error("Error adding document: ", error);
+            }
+        }
 
-            // 멤버 리스트에 추가
-            var memberList = document.getElementById("memberList");
-            memberList.appendChild(memberCard);
+        // 팀원 정보를 Firestore에 업데이트하는 함수
+        async function updateTeamMemberInFirestore(member) {
+            try {
+                const docRef = doc(db, "member", member.id);
+                await setDoc(docRef, member);
+                console.log("Document updated successfully");
+            } catch (error) {
+                console.error("Error updating document: ", error);
+            }
+            window.location.reload();
+        }
+
+        // 삭제하기 버튼 클릭 이벤트 처리
+        $("#memberList").on("click", ".delete-button", function () {
+            let memberId = $(this).parent().data("id"); // 해당 팀원의 ID 가져오기
+            // Firestore에서 해당 팀원 데이터 삭제
+            deleteTeamMemberFromFirestore(memberId);
         });
+
+        // Firestore에서 팀원 데이터 삭제
+        async function deleteTeamMemberFromFirestore(memberId) {
+            try {
+                await deleteDoc(doc(db, "member", memberId));
+                console.log("Document successfully deleted");
+                // 팀원 목록 다시 랜더링
+                updateTeamMembers();
+            } catch (error) {
+                console.error("Error removing document: ", error);
+            }
+        }
+
+        // 페이지 로딩 시 팀원 정보를 Firestore에서 가져와 표시
+        updateTeamMembers();
+
+        // 수정 폼 취소 함수
+        $("#cancelEditButton").click(function () {
+            // 수정 폼 숨김
+            $(".edit-form").hide();
+        });
+
+        // 합류하기 버튼 클릭 이벤트 처리
+        $("#addButton").click(function () {
+            // 합류하기 폼 토글
+            $(".join-form").toggle();
+        });
+
+        // 수정 폼 취소 버튼 클릭 이벤트 처리
+        $("#cancelAddButton").click(function () {
+            // 합류하기 폼 숨김
+            $(".join-form").hide();
+        });
+
+        // 합류하기 폼에서의 추가하기 버튼 클릭 이벤트 처리
+        $("#addForm").submit(function (event) {
+            event.preventDefault(); // 기본 동작 방지 (페이지 새로고침)
+            // 새로운 팀원 정보 생성
+            let newMember = {
+                image: $("#addImageURL").val(),
+                name: $("#addName").val(),
+                mbti: $("#addMbti").val(),
+                introduction: $("#addIntroduction").val(),
+                strengths: $("#addStrengths").val(),
+                style: $("#addStyle").val(),
+                goal: $("#addGoal").val()
+            };
+            // Firestore에 팀원 정보 추가
+            addTeamMemberToFirestore(newMember);
+            // 합류하기 폼 숨김
+            $(".join-form").hide();
+            // 폼 초기화
+            $(this)[0].reset();
+        });
+
+        // 팀원 수정 폼 표시 함수
+        $("#memberList").on("click", ".edit-button", function () {
+            let memberId = $(this).parent().data("id"); // 해당 팀원의 ID 가져오기
+            let member = teamMembers.find((member) => {
+                return member.id === memberId;
+            });
+            // 수정 폼에 해당 팀원의 정보 표시
+            $("#editImageURL").val(member.image);
+            $("#editName").val(member.name);
+            $("#editMbti").val(member.mbti);
+            $("#editIntroduction").val(member.introduction);
+            $("#editStrengths").val(member.strengths);
+            $("#editStyle").val(member.style);
+            $("#editGoal").val(member.goal);
+            // 수정 폼 표시
+            $(".edit-form").show();
+            // 수정하기 버튼에 대한 이벤트 리스너 추가
+            $("#editSubmitButton").off().click(function () {
+                // 수정된 정보로 팀원 업데이트
+                member.image = $("#editImageURL").val();
+                member.name = $("#editName").val();
+                member.mbti = $("#editMbti").val();
+                member.introduction = $("#editIntroduction").val();
+                member.strengths = $("#editStrengths").val();
+                member.style = $("#editStyle").val();
+                member.goal = $("#editGoal").val();
+                // Firestore에 수정된 정보 업데이트
+                updateTeamMemberInFirestore(member);
+                // 수정폼 숨김
+                $(".edit-form").hide();
+            });
+        });
+
     </script>
+</head>
+
+<body>
+    <h1>미7거같조 보석함</h1>
+    <div id="memberList">
+        <!-- 팀원 소개 칸 -->
+    </div>
+    <!-- 합류하기 버튼 -->
+    <button id="addButton">합류하기</button>
+    <!-- 합류하기 폼 -->
+    <div class="join-form" style="display: none;">
+        <h2>합류하기</h2>
+        <form id="addForm">
+            <div>
+                <label for="addImageURL">이미지 주소:</label>
+                <input type="text" id="addImageURL" required>
+            </div>
+            <div>
+                <label for="addName">이름:</label>
+                <input type="text" id="addName" required>
+            </div>
+            <div>
+                <label for="addMbti">MBTI:</label>
+                <input type="text" id="addMbti" required>
+            </div>
+            <div>
+                <label for="addIntroduction">자기 소개:</label>
+                <textarea id="addIntroduction" rows="4" cols="50" required></textarea>
+            </div>
+            <div>
+                <label for="addStrengths">객관적인 자신의 장점:</label>
+                <textarea id="addStrengths" rows="2" cols="50" required></textarea>
+            </div>
+            <div>
+                <label for="addStyle">자신만의 협업 스타일:</label>
+                <textarea id="addStyle" rows="2" cols="50" required></textarea>
+            </div>
+            <div>
+                <label for="addGoal">추구하는 궁극적인 목표:</label>
+                <textarea id="addGoal" rows="2" cols="50" required></textarea>
+            </div>
+            <button type="submit" id="postingbtn">추가하기</button>
+            <button type="button" id="cancelAddButton">취소하기</button>
+        </form>
+    </div>
+    <!-- 수정 폼 -->
+    <div class="edit-form" style="display: none;">
+        <h2>팀원 수정</h2>
+        <form id="editForm">
+            <div class="form-group">
+                <label for="editImageURL">이미지 주소:</label>
+                <input type="text" id="editImageURL" required>
+            </div>
+            <div class="form-group">
+                <label for="editName">이름:</label>
+                <input type="text" id="editName" required>
+            </div>
+            <div class="form-group">
+                <label for="editMbti">MBTI:</label>
+                <input type="text" id="editMbti" required>
+            </div>
+            <div class="form-group">
+                <label for="editIntroduction">자기 소개:</label>
+                <textarea id="editIntroduction" rows="4" required></textarea>
+            </div>
+            <div class="form-group">
+                <label for="editStrengths">객관적인 자신의 장점:</label>
+                <textarea id="editStrengths" rows="2" required></textarea>
+            </div>
+            <div class="form-group">
+                <label for="editStyle">자신만의 협업 스타일:</label>
+                <textarea id="editStyle" rows="2" required></textarea>
+            </div>
+            <div class="form-group">
+                <label for="editGoal">추구하는 궁극적인 목표:</label>
+                <textarea id="editGoal" rows="2" required></textarea>
+            </div>
+            <div class="button-group">
+                <button type="button" id="editSubmitButton">저장하기</button>
+                <button type="button" id="cancelEditButton">취소하기</button>
+            </div>
+        </form>
+    </div>
 </body>
+
 </html>
