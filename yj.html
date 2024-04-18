@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>미7거같조팀원</title>
+    <title>미7거같조 보석함</title>
     <link rel="stylesheet" href="yj.css">
     <style>
         .join-form,
@@ -11,6 +11,8 @@
             display: none;
         }
     </style>
+    <!-- jQuery 추가 -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 </head>
 <body>
     <h1>미7거같조 보석함</h1>
@@ -97,195 +99,161 @@
     </form>
 </div>
 
+<script>
+    // 팀원 정보
+    let teamMembers = [
+        { id: 1, name: "어동선", mbti: "INTP", image: "", introduction: "", strengths: "", style: "", goal: "" },
+        { id: 2, name: "강준모", mbti: "ISTJ", image: "", introduction: "", strengths: "", style: "", goal: "" },
+        { id: 3, name: "김윤재", mbti: "INFJ", image: "https://postfiles.pstatic.net/MjAyMzA1MTlfNTkg/MDAxNjg0NTA3MjI1MzY5.By6-h6NkUG7C2rkf65uenyHqJLE8NYCK7U0tLPn6LnMg.__rcEOf36DqndApIFdNs20GBBMWmpmU1Qk0vmg5rDtgg.JPEG.clover14_/028819A8-C0A4-4D3C-A611-1EDE52C4CF4D.jpg?type=w966", introduction: "", strengths: "", style: "", goal: "" },
+        { id: 4, name: "노주연", mbti: "INTP", image: "", introduction: "", strengths: "", style: "", goal: "" },
+        { id: 5, name: "이제범", mbti: "ENFJ", image: "", introduction: "", strengths: "", style: "", goal: "" }
+    ];
 
-    <script>
-        // 팀원 정보
-        var teamMembers = [
-            { id: 1, name: "어동선", mbti: "INTP", image: "", introduction: "", strengths: "", style: "", goal: "" },
-            { id: 2, name: "강준모", mbti: "ISTJ", image: "", introduction: "", strengths: "", style: "", goal: "" },
-            { id: 3, name: "김윤재", mbti: "INFJ", image: "https://postfiles.pstatic.net/MjAyMzA1MTlfNTkg/MDAxNjg0NTA3MjI1MzY5.By6-h6NkUG7C2rkf65uenyHqJLE8NYCK7U0tLPn6LnMg.__rcEOf36DqndApIFdNs20GBBMWmpmU1Qk0vmg5rDtgg.JPEG.clover14_/028819A8-C0A4-4D3C-A611-1EDE52C4CF4D.jpg?type=w966", introduction: "", strengths: "", style: "", goal: "" },
-            { id: 4, name: "노주연", mbti: "INTP", image: "", introduction: "", strengths: "", style: "", goal: "" },
-            { id: 5, name: "이제범", mbti: "ENFJ", image: "", introduction: "", strengths: "", style: "", goal: "" }
-        ];
+    // 팀원 리스트 표시 함수
+    function displayTeamMembers() {
+        let memberList = $("#memberList");
+        memberList.empty(); // 기존 목록 초기화
 
-        // 팀원 리스트 표시 함수
-        function displayTeamMembers() {
-            var memberList = document.getElementById("memberList");
-            memberList.innerHTML = ""; // 기존 목록 초기화
+        teamMembers.forEach((member) => {
+            let memberCard = $("<div class='member-card' data-id='" + member.id + "'>");
 
-            teamMembers.forEach(function(member) {
-                var memberCard = document.createElement("div");
-                memberCard.className = "member-card";
-                memberCard.dataset.id = member.id; // 데이터셋으로 ID 저장
+            let imageElement = $("<img class='member-image'>");
+            imageElement.attr("src", member.image);
+            imageElement.css({width: "100px", height: "auto"});
+            memberCard.append(imageElement);
 
-                var imageElement = document.createElement("img");
-                imageElement.className = "member-image";
-                imageElement.src = member.image;
-                imageElement.style.width = "100px";
-                imageElement.style.height = "auto";
-                memberCard.appendChild(imageElement);
+            let nameElement = $("<h2 class='member-name'>").text(member.name);
+            memberCard.append(nameElement);
 
-                var nameElement = document.createElement("h2");
-                nameElement.className = "member-name";
-                nameElement.textContent = member.name;
-                memberCard.appendChild(nameElement);
+            let mbtiElement = $("<p class='member-mbti'>").text("MBTI: " + member.mbti);
+            memberCard.append(mbtiElement);
 
-                var mbtiElement = document.createElement("p");
-                mbtiElement.className = "member-mbti";
-                mbtiElement.textContent = "MBTI: " + member.mbti;
-                memberCard.appendChild(mbtiElement);
+            let introductionElement = $("<p class='member-introduction'>").text("자기 소개: " + member.introduction);
+            memberCard.append(introductionElement);
 
-                var introductionElement = document.createElement("p");
-                introductionElement.className = "member-introduction";
-                introductionElement.textContent = "자기 소개: " + member.introduction;
-                memberCard.appendChild(introductionElement);
+            let strengthsElement = $("<p class='member-strengths'>").text("객관적인 자신의 장점: " + member.strengths);
+            memberCard.append(strengthsElement);
 
-                var strengthsElement = document.createElement("p");
-                strengthsElement.className = "member-strengths";
-                strengthsElement.textContent = "객관적인 자신의 장점: " + member.strengths;
-                memberCard.appendChild(strengthsElement);
+            let styleElement = $("<p class='member-style'>").text("자신만의 협업 스타일: " + member.style);
+            memberCard.append(styleElement);
 
-                var styleElement = document.createElement("p");
-                styleElement.className = "member-style";
-                styleElement.textContent = "자신만의 협업 스타일: " + member.style;
-                memberCard.appendChild(styleElement);
+            let goalElement = $("<p class='member-goal'>").text("추구하는 궁극적인 목표: " + member.goal);
+            memberCard.append(goalElement);
 
-                var goalElement = document.createElement("p");
-                goalElement.className = "member-goal";
-                goalElement.textContent = "추구하는 궁극적인 목표: " + member.goal;
-                memberCard.appendChild(goalElement);
+            let editButton = $("<button class='edit-button'>").text("수정하기");
+            memberCard.append(editButton);
 
-                var editButton = document.createElement("button");
-                editButton.textContent = "수정하기";
-                editButton.className = "edit-button";
-                memberCard.appendChild(editButton);
+            let deleteButton = $("<button class='delete-button'>").text("삭제하기");
+            memberCard.append(deleteButton);
 
-                var deleteButton = document.createElement("button");
-                deleteButton.textContent = "삭제하기";
-                deleteButton.className = "delete-button";
-                memberCard.appendChild(deleteButton);
+            memberList.append(memberCard);
+        });
+    }
 
-                memberList.appendChild(memberCard);
-            });
-        }
+    // 삭제하기 버튼 클릭 이벤트 처리
+    $("#memberList").on("click", ".delete-button", function() {
+        let memberId = parseInt($(this).parent().data("id")); // 해당 팀원의 ID 가져오기
 
-        // 삭제하기 버튼 클릭 이벤트 처리
-        document.getElementById("memberList").addEventListener("click", function(event) {
-            if (event.target.classList.contains("delete-button")) {
-                var memberId = parseInt(event.target.parentNode.dataset.id); // 해당 팀원의 ID 가져오기
-
-                // 팀원 삭제
-                teamMembers = teamMembers.filter(function(member) {
-                    return member.id !== memberId;
-                });
-
-                // 팀원 목록 다시 표시
-                displayTeamMembers();
-
-                // 페이지 새로고침
-                location.reload();
-            }
+        // 팀원 삭제
+        teamMembers = teamMembers.filter((member) => {
+            return member.id !== memberId;
         });
 
-        // 합류하기 폼 표시 함수
-        document.getElementById("addButton").addEventListener("click", function() {
-            document.querySelector(".join-form").style.display = "block";
+        // 팀원 목록 다시 표시
+        displayTeamMembers();
+    });
+
+    // 합류하기 폼 표시 함수
+    $("#addButton").click(function() {
+        $(".join-form").show();
+    });
+
+    // 합류하기 폼 취소 함수
+    $("#cancelAddButton").click(function() {
+        $(".join-form").hide();
+    });
+
+    // 합류하기 폼 제출 함수
+    $("#addForm").submit(function(event) {
+        event.preventDefault(); // 폼 제출 기본 동작 막기
+
+        let imageURL = $("#addImageURL").val();
+        let name = $("#addName").val();
+        let mbti = $("#addMbti").val();
+        let introduction = $("#addIntroduction").val();
+        let strengths = $("#addStrengths").val();
+        let style = $("#addStyle").val();
+        let goal = $("#addGoal").val();
+
+        // 새로운 팀원 객체 생성
+        let newMember = {
+            id: teamMembers.length + 1, // 현재 팀원 수 + 1
+            name: name,
+            mbti: mbti,
+            image: imageURL,
+            introduction: introduction,
+            strengths: strengths,
+            style: style,
+            goal: goal
+        };
+
+        // 합류하기
+        teamMembers.push(newMember);
+
+        // 팀원 목록 다시 표시
+        displayTeamMembers();
+
+        // 폼 초기화 및 숨김
+        $("#addImageURL, #addName, #addMbti, #addIntroduction, #addStrengths, #addStyle, #addGoal").val("");
+        $(".join-form").hide();
+    });
+
+    // 수정 폼 취소 함수
+    $("#cancelEditButton").click(function() {
+        // 수정 폼 숨김
+        $(".edit-form").hide();
+    });
+
+    // 팀원 수정 폼 표시 함수
+    $("#memberList").on("click", ".edit-button", function() {
+        let memberId = parseInt($(this).parent().data("id")); // 해당 팀원의 ID 가져오기
+        let member = teamMembers.find((member) => {
+            return member.id === memberId;
         });
 
-        // 합류하기 폼 취소 함수
-        document.getElementById("cancelAddButton").addEventListener("click", function() {
-            document.querySelector(".join-form").style.display = "none";
-        });
+        // 수정 폼에 해당 팀원의 정보 표시
+        $("#editImageURL").val(member.image);
+        $("#editName").val(member.name);
+        $("#editMbti").val(member.mbti);
+        $("#editIntroduction").val(member.introduction);
+        $("#editStrengths").val(member.strengths);
+        $("#editStyle").val(member.style);
+        $("#editGoal").val(member.goal);
 
-        // 합류하기 폼 제출 함수
-        document.getElementById("addForm").addEventListener("submit", function(event) {
-            event.preventDefault(); // 폼 제출 기본 동작 막기
+        // 수정 폼 표시
+        $(".edit-form").show();
 
-            var imageURL = document.getElementById("addImageURL").value;
-            var name = document.getElementById("addName").value;
-            var mbti = document.getElementById("addMbti").value;
-            var introduction = document.getElementById("addIntroduction").value;
-            var strengths = document.getElementById("addStrengths").value;
-            var style = document.getElementById("addStyle").value;
-            var goal = document.getElementById("addGoal").value;
-
-            // 새로운 팀원 객체 생성
-            var newMember = {
-                id: teamMembers.length + 1, // 현재 팀원 수 + 1
-                name: name,
-                mbti: mbti,
-                image: imageURL,
-                introduction: introduction,
-                strengths: strengths,
-                style: style,
-                goal: goal
-            };
-
-            // 합류하기
-            teamMembers.push(newMember);
+        // 수정하기 버튼에 대한 이벤트 리스너 추가
+        $("#editSubmitButton").click(function() {
+            // 수정된 정보로 팀원 업데이트
+            member.image = $("#editImageURL").val();
+            member.name = $("#editName").val();
+            member.mbti = $("#editMbti").val();
+            member.introduction = $("#editIntroduction").val();
+            member.strengths = $("#editStrengths").val();
+            member.style = $("#editStyle").val();
+            member.goal = $("#editGoal").val();
 
             // 팀원 목록 다시 표시
             displayTeamMembers();
 
-            // 폼 초기화 및 숨김
-            document.getElementById("addImageURL").value = "";
-            document.getElementById("addName").value = "";
-            document.getElementById("addMbti").value = "";
-            document.getElementById("addIntroduction").value = "";
-            document.getElementById("addStrengths").value = "";
-            document.getElementById("addStyle").value = "";
-            document.getElementById("addGoal").value = "";
-            document.querySelector(".join-form").style.display = "none";
+            // 수정폼 숨김
+            $(".edit-form").hide();
         });
+    });
 
-        // 수정 폼 취소 함수
-        document.getElementById("cancelEditButton").addEventListener("click", function() {
-            // 수정 폼 숨김
-            document.querySelector(".edit-form").style.display = "none";
-        });
-
-        // 팀원 수정 폼 표시 함수
-        document.getElementById("memberList").addEventListener("click", function(event) {
-            if (event.target.classList.contains("edit-button")) {
-                var memberId = parseInt(event.target.parentNode.dataset.id); // 해당 팀원의 ID 가져오기
-                var member = teamMembers.find(function(member) {
-                    return member.id === memberId;
-                });
-
-                // 수정 폼에 해당 팀원의 정보 표시
-                document.getElementById("editImageURL").value = member.image;
-                document.getElementById("editName").value = member.name;
-                document.getElementById("editMbti").value = member.mbti;
-                document.getElementById("editIntroduction").value = member.introduction;
-                document.getElementById("editStrengths").value = member.strengths;
-                document.getElementById("editStyle").value = member.style;
-                document.getElementById("editGoal").value = member.goal;
-
-                // 수정 폼 표시
-                document.querySelector(".edit-form").style.display = "block";
-
-                // 수정하기 버튼에 대한 이벤트 리스너 추가
-                document.getElementById("editSubmitButton").addEventListener("click", function() {
-                    // 수정된 정보로 팀원 업데이트
-                    member.image = document.getElementById("editImageURL").value;
-                    member.name = document.getElementById("editName").value;
-                    member.mbti = document.getElementById("editMbti").value;
-                    member.introduction = document.getElementById("editIntroduction").value;
-                    member.strengths = document.getElementById("editStrengths").value;
-                    member.style = document.getElementById("editStyle").value;
-                    member.goal = document.getElementById("editGoal").value;
-
-                    // 팀원 목록 다시 표시
-                    displayTeamMembers();
-
-                    // 수정폼 숨김
-                    document.querySelector(".edit-form").style.display = "none";
-                });
-            }
-        });
-
-        // 초기 팀원 목록 표시
-        displayTeamMembers();
-    </script>
+    // 초기 팀원 목록 표시
+    displayTeamMembers();
+</script>
 </body>  
 </html>
